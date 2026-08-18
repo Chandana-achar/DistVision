@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Intern Case Study — DistVision</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            color: #1a1a2e;
+            background: #e8eaed;
+            padding: 0;
+        }
+
+        @page {
+            size: A4;
+            margin: 18mm 20mm 18mm 20mm;
+        }
+
+        .page {
+            max-width: 210mm;
+            margin: 24px auto;
+            padding: 18mm 22mm;
+            background: #fff;
+            box-shadow: 0 2px 24px rgba(0,0,0,0.12);
+            position: relative;
+        }
+
+        @media print {
+            body { background: #fff; }
+            .page {
+                padding: 0;
+                max-width: 100%;
+                margin: 0;
+                box-shadow: none;
+            }
+            .page-break { page-break-before: always; }
+            .no-print { display: none !important; }
+        }
+
+        /* ── Page header (running header on page 2+) ── */
+        .running-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 8.5pt;
+            color: #64748b;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-bottom: 16px;
+        }
+
+        /* ── Main header (page 1) ── */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 2.5px solid #1a1a2e;
+        }
+
+        .main-header-left h1 {
+            font-size: 22pt;
+            font-weight: 800;
+            color: #1a1a2e;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .main-header-right {
+            text-align: right;
+        }
+
+        .main-header-right .company-name {
+            font-size: 16pt;
+            font-weight: 800;
+            color: #c2410c;
+            letter-spacing: 0.5px;
+        }
+
+        .main-header-right .company-tagline {
+            font-size: 7pt;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .meta-line {
+            font-size: 10pt;
+            color: #334155;
+            margin-bottom: 2px;
+        }
+
+        .meta-line strong {
+            color: #1a1a2e;
+        }
+
+        /* ── Section headings ── */
+        .section-heading {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #c2410c;
+            margin-top: 18px;
+            margin-bottom: 6px;
+        }
+
+        .section-heading-small {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #c2410c;
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+
+        .numbered-heading {
+            font-size: 15pt;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        .sub-question {
+            font-size: 10.5pt;
+            font-weight: 500;
+            color: #334155;
+            font-style: italic;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        /* ── Body text ── */
+        p {
+            font-size: 10.5pt;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        ul {
+            margin-left: 18px;
+            margin-bottom: 6px;
+            list-style-type: disc;
+        }
+
+        ul li {
+            margin-bottom: 4px;
+            font-size: 10.5pt;
+            color: #334155;
+        }
+
+        ul li strong {
+            color: #1a1a2e;
+        }
+
+        ol {
+            margin-left: 18px;
+            margin-bottom: 6px;
+        }
+
+        ol li {
+            margin-bottom: 4px;
+            font-size: 10.5pt;
+            color: #334155;
+        }
+
+        /* ── Formula box ── */
+        .formula-box {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            padding: 7px 14px;
+            margin: 6px 0;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 9.5pt;
+            color: #1e293b;
+            border-radius: 4px;
+        }
+
+        /* ── Table ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 10pt;
+        }
+
+        th {
+            background: #c2410c;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 10pt;
+        }
+
+        td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 10pt;
+        }
+
+        tr:nth-child(even) {
+            background: #faf5f2;
+        }
+
+        /* ── Challenge section ── */
+        .challenge-heading {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+
+        .challenge-label {
+            font-weight: 700;
+            font-size: 10.5pt;
+            color: #1a1a2e;
+        }
+
+        .challenge-text {
+            font-size: 10.5pt;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        /* ── Code block ── */
+        .code-block {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 9pt;
+            line-height: 1.5;
+            margin: 6px 0;
+            color: #1e293b;
+            white-space: pre;
+            overflow: hidden;
+        }
+
+        /* ── Divider ── */
+        hr {
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin: 12px 0;
+        }
+
+        /* ── Links ── */
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Placeholder ── */
+        .placeholder {
+            background: #fef3c7;
+            border: 1px dashed #f59e0b;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 9.5pt;
+            color: #92400e;
+            margin: 6px 0;
+            font-style: italic;
+        }
+
+        /* ── Screenshots section ── */
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        .screenshot-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #d1d5db;
+            border-radius: 6px;
+            padding: 24px 12px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 9.5pt;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 8px;
+            border-top: 1.5px solid #1a1a2e;
+            font-size: 8pt;
+            color: #94a3b8;
+        }
+
+        /* ── Print button ── */
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #c2410c, #9a3412);
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 11pt;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(194, 65, 12, 0.35);
+            z-index: 100;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(194, 65, 12, 0.45);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Print Button -->
+    <button class="print-btn no-print" onclick="window.print()">📄 Save as PDF</button>
+
+    <!-- ╔═══════════════════════════════════════════════════════════╗ -->
+    <!-- ║                      PAGE 1                              ║ -->
+    <!-- ╚═══════════════════════════════════════════════════════════╝ -->
+    <div class="page">
+
+        <!-- Main Header -->
+        <div class="main-header">
+            <div class="main-header-left">
+                <h1>AI Intern Case Study</h1>
+            </div>
+            <div class="main-header-right">
+                <div class="company-name">HSD2C</div>
+                <div class="company-tagline">High Speed Device to Cloud<br>Solutions</div>
+            </div>
+        </div>
+
+        <div class="meta-line"><strong>Basic Assessment</strong> — Project: <strong>DistVision</strong></div>
+        <div class="meta-line">Submitted by: <strong>Chandana B</strong> &nbsp;|&nbsp; USN: <strong>1RF23CS051</strong></div>
+
+        <hr>
+
+        <!-- Objective -->
+        <div class="section-heading">Objective</div>
+        <p>This case study evaluates basic understanding of AI, problem-solving skills, and ability to design a simple real-world system.</p>
+
+        <!-- Problem Statement -->
+        <div class="section-heading">Problem Statement</div>
+        <p>Design a system that can detect objects (like people, vehicles, etc.) and estimate their distance from a camera.</p>
+
+        <!-- ═══════════ 1. APPROACH ═══════════ -->
+        <div class="numbered-heading">1. Approach</div>
+
+        <div class="sub-question">How would you solve this problem?</div>
+        <ul>
+            <li>Built a <strong>Streamlit web app (DistVision)</strong> with two input modes — image upload and live webcam capture.</li>
+            <li>Object detection via <strong>YOLOv8s</strong> (80 COCO classes), with an automatic <strong>YOLO-World v2</strong> fallback for open-vocabulary detection (flowers, trees, pens, and 41 other extra classes).</li>
+            <li>Distance estimated using a <strong>hybrid approach</strong> — a similar-triangles formula (40%) blended with an AI-generated depth map from <strong>Depth Anything V2</strong> (60%).</li>
+        </ul>
+
+        <div class="sub-question">What steps will you follow from camera input to final output?</div>
+        <ul>
+            <li><strong>Input</strong> — user uploads an image or captures a webcam frame in the browser; converted to an RGB array and then to BGR for OpenCV.</li>
+            <li><strong>Object Detection</strong> — the frame is passed to YOLOv8s (COCO). If the results are weak or empty (max confidence &lt; 0.40 or average confidence &lt; 0.30), YOLO-World runs automatically as a fallback and its results are merged with the COCO ones (overlap and specificity based de-duplication).</li>
+            <li><strong>Filtering</strong> — tiny bounding boxes and detections below the confidence slider are removed.</li>
+            <li><strong>AI Depth Map</strong> — if enabled, Depth Anything V2 generates a per-pixel relative depth map for the frame.</li>
+            <li><strong>Distance Calculation</strong> — the hybrid pipeline blends the similar-triangles distance (40%) with the scaled AI depth (60%) for every detected object.</li>
+            <li><strong>Output</strong> — an annotated image with bounding boxes, class labels, confidence scores and distances, plus a detection table and an optional depth-map visualisation.</li>
+        </ul>
+
+        <!-- ═══════════ 2. DISTANCE ESTIMATION ═══════════ -->
+        <div class="numbered-heading">2. Distance Estimation</div>
+
+        <div class="sub-question">How will you calculate distance?</div>
+        <p><strong>Primary — Similar-Triangles Formula:</strong></p>
+        <div class="formula-box">
+            Distance (m) = (Known real-world height × Focal length in px) / Bounding-box height in px
+        </div>
+        <ul>
+            <li>A lookup table of approximate real-world heights for <strong>~140 object classes</strong> (80 COCO + ~60 YOLO-World extras) is maintained in the codebase; unknown classes fall back to a default of 0.50 m.</li>
+            <li>Focal length defaults to <strong>700 px</strong> (typical for a 1080p webcam) and is <strong>calibratable in-app</strong>: the user measures a reference object's real height and distance, reads its bounding-box height from the detection table, and enters all three — the app then computes focal length = (bbox height × known distance) / known height.</li>
+            <li><strong>AI-Depth enhancement</strong> — Depth Anything V2 produces a relative (not metric) depth map. The highest-confidence detection is used as an anchor to scale the relative depth into metres. Final distance = <strong>0.6 × AI-scaled depth + 0.4 × similar-triangles distance</strong>.</li>
+        </ul>
+
+        <div class="sub-question">Which method will you use and why?</div>
+        <ul>
+            <li><strong>Similar-triangles</strong> — simple, fast, works with any monocular camera, no special hardware.</li>
+            <li><strong>AI depth</strong> — adds spatial awareness and differentiates objects that look similarly sized in the image but sit at different real-world depths.</li>
+            <li><strong>Hybrid blend</strong> — combines the strengths of both, correcting individual errors and giving more reliable results overall. It is used because a single monocular camera alone cannot resolve true depth ambiguity.</li>
+        </ul>
+
+        <!-- ═══════════ 3. MODEL CHOICE ═══════════ -->
+        <div class="numbered-heading">3. Model Choice</div>
+
+        <div class="sub-question">Which AI model will you use for object detection?</div>
+        <table>
+            <tr>
+                <th>Purpose</th>
+                <th>Model</th>
+                <th>Size</th>
+                <th>Why Chosen</th>
+            </tr>
+            <tr>
+                <td>Object Detection</td>
+                <td><strong>YOLOv8s</strong></td>
+                <td>~22 MB</td>
+                <td>Fast, 80 COCO classes, clean Python API</td>
+            </tr>
+            <tr>
+                <td>Open-Vocab Fallback</td>
+                <td><strong>YOLO-World v2</strong></td>
+                <td>~26 MB</td>
+                <td>Detects objects beyond the 80 COCO classes</td>
+            </tr>
+            <tr>
+                <td>Depth Estimation</td>
+                <td><strong>Depth Anything V2</strong></td>
+                <td>~100 MB</td>
+                <td>State-of-the-art monocular depth, runs on CPU</td>
+            </tr>
+        </table>
+
+        <div class="sub-question">Why did you choose it?</div>
+        <ul>
+            <li><strong>vs. YOLOv5</strong> — YOLOv8 gives higher mAP on COCO and has a cleaner Python API.</li>
+            <li><strong>vs. Faster R-CNN / SSD</strong> — YOLO is a single-stage detector and significantly faster; two-stage detectors are too slow for an interactive web app.</li>
+            <li><strong>vs. YOLOv8n (nano)</strong> — YOLOv8s trades a small amount of speed for noticeably better accuracy, while still running in real time on CPU.</li>
+        </ul>
+
+        <!-- ═══════════ 4. DATA ═══════════ -->
+        <div class="numbered-heading">4. Data</div>
+
+        <div class="sub-question">What type of data is needed?</div>
+        <ul>
+            <li><strong>Pre-trained model weights</strong> only — no custom training data was required. YOLOv8s is trained on COCO (330K images, 80 classes); Depth Anything V2 is trained on large-scale synthetic + real depth data.</li>
+            <li>An <strong>object-height lookup table</strong> (~140 entries) with approximate real-world heights, e.g. person = 1.70 m, car = 1.50 m.</li>
+        </ul>
+
+        <div class="sub-question">How will you collect or obtain it?</div>
+        <ul>
+            <li><strong>YOLOv8s</strong> (yolov8s.pt) — auto-downloaded from Ultralytics on first run.</li>
+            <li><strong>YOLO-World</strong> (yolov8s-worldv2.pt) — auto-downloaded the same way.</li>
+            <li><strong>Depth Anything V2</strong> — auto-downloaded from the Hugging Face Hub.</li>
+            <li><strong>User input</strong> — images are supplied at runtime via upload or webcam; no dataset collection is needed.</li>
+        </ul>
+
+        <!-- ═══════════ 5. DEPLOYMENT IDEA ═══════════ -->
+        <div class="numbered-heading">5. Deployment Idea</div>
+
+        <div class="sub-question">Where will your system run?</div>
+        <ul>
+            <li><strong>Laptop / Desktop</strong> — runs locally via <code>streamlit run app.py</code> on any machine with Python 3.9+.</li>
+            <li><strong>Cloud</strong> — designed to deploy directly to Streamlit Community Cloud (push the repo to GitHub → connect → deploy); uses opencv-python-headless so no system GUI packages are needed on the cloud VM.</li>
+        </ul>
+
+        <!-- PLACEHOLDER: Deployed link -->
+        <div class="placeholder">
+            🔗 <strong>Deployed App Link:</strong> <em>[YOUR_DEPLOYED_LINK_HERE]</em> — replace this with your Streamlit Cloud or hosted URL.
+        </div>
+
+        <div class="sub-question">How will you make it efficient?</div>
+        <ul>
+            <li><strong>Model caching</strong> — all models are loaded once (singleton pattern) and reused across requests.</li>
+            <li><strong>Smart fallback</strong> — YOLO-World only runs when the COCO results are weak, avoiding unnecessary computation.</li>
+            <li><strong>Small model variants</strong> — YOLOv8s (~22 MB) and Depth Anything V2-Small (~100 MB) are chosen for CPU speed.</li>
+            <li><strong>Lazy imports</strong> — heavy libraries (PyTorch, Transformers) are imported only when actually needed.</li>
+        </ul>
+
+        <!-- ═══════════ 6. CHALLENGES ═══════════ -->
+        <div class="numbered-heading">6. Challenges</div>
+
+        <div class="challenge-heading">Challenge 1 — Inaccurate distance without camera calibration</div>
+        <p><span class="challenge-label">Problem:</span></p>
+        <p class="challenge-text">The similar-triangles method needs an accurate focal length; the default value can be wrong for different cameras.</p>
+        <p><span class="challenge-label">Solution:</span></p>
+        <p class="challenge-text">Built an in-app calibration tool where the user provides a reference object's known height, distance and bounding-box height; the AI depth model also provides a second, independent estimate, which reduces sensitivity to a single calibration.</p>
+
+        <div class="challenge-heading">Challenge 2 — Detecting objects beyond the 80 COCO classes</div>
+        <p><span class="challenge-label">Problem:</span></p>
+        <p class="challenge-text">YOLOv8 alone only recognises 80 classes, so common objects like flowers, trees or pens are missed.</p>
+        <p><span class="challenge-label">Solution:</span></p>
+        <p class="challenge-text">Implemented a smart auto-fallback to YOLO-World (open-vocabulary detector) covering 41 extra classes, with a semantic merge pipeline that de-duplicates overlapping detections so the more specific label wins.</p>
+
+        <div class="challenge-heading">Challenge 3 — AI depth gives relative values, not absolute metres</div>
+        <p><span class="challenge-label">Problem:</span></p>
+        <p class="challenge-text">Depth Anything V2 outputs relative depth, not real-world distance in metres.</p>
+        <p><span class="challenge-label">Solution:</span></p>
+        <p class="challenge-text">The most confident detection's similar-triangles distance is used to anchor the entire depth map to absolute metres — the AI model improves relative ordering between objects while similar-triangles grounds the result in real-world scale.</p>
+
+        <hr>
+
+        <!-- ═══════════ PROJECT STRUCTURE ═══════════ -->
+        <div class="section-heading-small">Project Structure</div>
+        <div class="code-block">
+DistVision/
+|── app.py              # Streamlit UI (image upload + webcam modes)
+|── detector.py         # YOLOv8s + YOLO-World with smart fallback
+|── distance.py         # Distance estimation (similar-triangles + hybrid AI)
+|── depth_estimator.py  # Depth Anything V2 wrapper (monocular depth maps)
+|── requirements.txt    # Python dependencies
+└── README.md           # Project documentation
+        </div>
+
+        <!-- ═══════════ TECH STACK ═══════════ -->
+        <div class="section-heading-small">Tech Stack</div>
+        <p><strong>Python 3.9+</strong> &nbsp;·&nbsp; <strong>Streamlit</strong> &nbsp;·&nbsp; <strong>Ultralytics YOLOv8 / YOLO-World</strong> &nbsp;·&nbsp; <strong>Depth Anything V2</strong> (Hugging Face) &nbsp;·&nbsp; <strong>OpenCV</strong> &nbsp;·&nbsp; <strong>NumPy / Pillow</strong></p>
+
+        <hr>
+
+        <!-- ═══════════ SCREENSHOTS ═══════════ -->
+        <div class="section-heading-small">Screenshots</div>
+
+        <!-- PLACEHOLDER: Screenshots -->
+        <div class="screenshot-grid">
+            <div class="screenshot-placeholder">
+                📸 Screenshot 1<br><em>[Upload / paste image here]</em>
+            </div>
+            <div class="screenshot-placeholder">
+                📸 Screenshot 2<br><em>[Upload / paste image here]</em>
+            </div>
+            <div class="screenshot-placeholder">
+                📸 Screenshot 3<br><em>[Upload / paste image here]</em>
+            </div>
+            <div class="screenshot-placeholder">
+                📸 Screenshot 4<br><em>[Upload / paste image here]</em>
+            </div>
+        </div>
+
+        <div class="placeholder">
+            📷 <strong>Screenshot Instructions:</strong> Replace the placeholders above with actual &lt;img&gt; tags pointing to your screenshot files, e.g.<br>
+            <code>&lt;img src="screenshot1.png" style="width:100%; border-radius:4px;"&gt;</code>
+        </div>
+
+        <!-- ═══════════ FOOTER ═══════════ -->
+        <div class="footer">
+            <span>Copyright © HSD2C Systems Pvt Ltd &nbsp;|&nbsp; www.hsd2c.com &nbsp;|&nbsp; All rights reserved</span>
+            <span>Page 1</span>
+        </div>
+
+    </div>
+
+</body>
+</html>
